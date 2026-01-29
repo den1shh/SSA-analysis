@@ -1,0 +1,233 @@
+\documentclass{beamer}
+
+% Кодировка и язык
+\usepackage[T2A]{fontenc}   % Поддержка кириллицы
+\usepackage[utf8]{inputenc}  % UTF-8 кодировка
+\usepackage[russian]{babel}  % Русский язык
+
+% Тема и цветовая схема
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+
+% Математика
+\usepackage{amsmath, amssymb}
+
+% Информация о презентации
+\title{Прогнозирование сегмента временного ряда методом сингулярного анализа спектра}
+\author{Гудков Денис}
+\institute{ФПМИ МФТИ}
+\date{}
+
+\begin{document}
+
+% Титульный слайд
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Слайд с содержанием
+% \begin{frame}{Содержание}
+%   \tableofcontents
+% \end{frame}
+
+\section{Введение}
+
+\begin{frame}{Цель работы}
+    \begin{block}{}
+        Рассказать о прогнозировании сегмента временного ряда методом сингулярного анализа спектра. Проанализировать исходную размерность матрицы Ганкеля 
+        и ее сниженную размерность.    
+    \end{block}
+%   \begin{itemize}
+%     \item Показать работу Beamer с русским языком
+%     \item Поддержка формул
+%     \item Красивое оформление слайдов
+%   \end{itemize}
+\end{frame}
+
+\begin{frame}{Применение сингулярного разложения (SSA)}
+
+\begin{block}{}
+SSA позволяет:
+\begin{itemize}
+    \item Прогнозировать значения временного ряда
+    \item Выделять тренды и периодичность
+    \item Удалять шум
+    \item Разделять детерминистические и стохастические компоненты
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Постановка задачи прогнозирования с помощью SSA}
+
+Пусть задан временной ряд:
+\[
+X = \{x_1, x_2, \dots, x_N\}, \quad x_t \in \mathbb{R}.
+\]
+Необходимо предсказать будущие значения:
+\[
+x_{N+1}, x_{N+2}, \dots, x_{N+M}.
+\]
+\end{frame}
+
+\begin{frame}{Построение матрицы Ганкеля}
+        Выбираем длину окна \(L\) и формируем матрицу траекторий:
+        \[
+        \mathbf{X} =
+        \begin{pmatrix}
+        x_1 & x_2 & \dots & x_K \\
+        x_2 & x_3 & \dots & x_{K+1} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        x_L & x_{L+1} & \dots & x_N
+        \end{pmatrix}, \quad K = N - L + 1.
+        \]
+        Данная матрица называются матрицей Ганкеля. 
+    Рекомендации по выбору $L$:
+    \begin{itemize}
+        \item  Слишком маленькое $L$: плохо выделяются сезонные колебания, шум может доминировать
+        \item  Слишком большое $L$: тяжёлые вычисления, важные колебания становятся менее четкими
+        \item  Сезонные компоненты: лучше выбирать $L\ge$ периода ряда
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Сингулярное разложение}
+        Пусть $\mathbf{S} = \mathbf{X} \mathbf{X}^{\mathrm{T}}$, а $\lambda_1, \dots, \lambda_L$ — собственные значения матрицы $\mathbf{S}$, $U_1, \dots, U_L$ — 
+        ортонормированный базис из собственных векторов матрицы $\mathbf{S}$, соответствующих этим собственным значениям.
+        Пусть  $d = \mathrm{rank} X$ и
+        $V_i = \mathbf{X}^{\mathrm{T}} U_i / \sqrt{\lambda_i}, \quad i = 1, \dots, d$.
+
+        В этой записи SVD матрицы $\mathbf{X}$ можно записать как
+        \begin{equation}
+        \mathbf{X} = \mathbf{X}_1 + \dots + \mathbf{X}_d,
+        \end{equation}
+        где
+        \begin{equation}
+        \mathbf{X}_i = \sqrt{\lambda_i}\, U_i V_i^{\mathrm{T}}.
+        \end{equation}
+        Векторы $\sqrt{\lambda_i} V_i = \mathbf{X}^{\mathrm{T}} U_i$
+        называются векторами главных компонент. Векторы \(U_i\) называются левыми сингулярными векторами матрицы \(\mathbf{X}\), а числа \(\sqrt{\lambda_i}\) являются её 
+        сингулярными значениями.
+\end{frame}
+
+\begin{frame}{Перегруппировка компонент}
+        Множество индексов $\{1, \ldots, d\}$ делится на $m$ непересекающихся подмножеств $I_1, \ldots, I_m$.
+
+        Пусть
+        \[
+        I = \{i_1, \ldots, i_p\}.
+        \]
+        Тогда результирующая матрица $\mathbf{X}_I$, соответствующая группе $I$, определяется как
+        \[
+        \mathbf{X}_I = \mathbf{X}_{i_1} + \ldots + \mathbf{X}_{i_p}.
+        \]
+
+        Результирующие матрицы вычисляются для групп
+        \[
+        I = I_1, \ldots, I_m,
+        \]
+        и сгруппированное SVD-разложение $\mathbf{X}$ можно записать как
+        \[
+        \mathbf{X} = \mathbf{X}_{I_1} + \ldots + \mathbf{X}_{I_m}.
+        \]
+
+
+\end{frame}
+
+\begin{frame}{Как выбираются компоненты для перегруппировки}
+        \begin{enumerate}
+            \item \textbf{Анализ сингулярного спектра.} Смотрим на убывание $\sqrt{\lambda_i}$. Резкие скачки говорят о границах между трендом, сезонностью и шумом. 
+                    Малые сингулярные значения убираются. 
+            \item \textbf{Анализ левых сингулярных векторов.} Гладкие компоненты без колебаний соответствуют тренду, синусоидальные и идущие парами --- сезонности, 
+                    хаотичные --- шуму. Пары компонент объединяются в одну группу. 
+        \end{enumerate}
+        Итоговая группировка состоит из компоненты тренда и сезонных компонент. 
+
+\end{frame}
+
+\begin{frame}{Сравнение исходной и перегруппированной матриц Ганкеля}
+
+\textbf{После SVD и перегруппировки компонент:}
+\[
+\mathbf{X} = \mathbf{X}_{I_1} + \mathbf{X}_{I_2}
+\]
+
+\begin{itemize}
+    \item \(\mathbf{X}_{I_1}\) — тренд  
+    \item \(\mathbf{X}_{I_2}\) — сезонность (пары гармоник)  
+\end{itemize}
+
+Исходная матрица \(\mathbf{X}\) содержит весь ряд, включая шум, а перегруппированная матрицавыделяет только значимые структурные компоненты. 
+Снижение размерности упрощает анализ и повышает точность прогноза
+
+\end{frame}
+
+
+\begin{frame}{Построение линейного рекуррентного соотношения}
+
+После перегруппировки компонент SSA формируем восстановленный ряд:
+\[
+\mathbf{X}_{\text{recon}} = \sum_{i \in I} \mathbf{X}_i
+\]
+
+\textbf{Линейное рекуррентное соотношение} для группы компонент имеет вид:
+\[
+y_t = a_1 y_{t-1} + a_2 y_{t-2} + \dots + a_{L-1} y_{t-L+1}, 
+\quad t = L, \dots, N
+\]
+
+Коэффициенты $a_1, \dots, a_{L-1}$ вычисляются через левые сингулярные векторы $U_i$ группы $I$:
+\[
+A = \frac{1}{1 - \nu^2} \sum_{i \in I} \pi(U_i) \, \underline{U_i}^\top,
+\]
+где 
+\(\underline{U_i} = (u_{i1}, \dots, u_{i,L-1})^\top\), 
+\(\pi(U_i) = u_{iL}\), 
+\(\nu^2 = \sum_{i \in I} u_{iL}^2\).
+
+% \vspace{0.3cm}
+% \textbf{Прогноз будущих значений} строится рекурсивно:
+% \[
+% \hat{y}_{N+1} = a_1 y_N + \dots + a_{L-1} y_{N-L+2}, \quad
+% \hat{y}_{N+2} = a_1 \hat{y}_{N+1} + \dots
+% \]
+
+% \vspace{0.3cm}
+\footnotesize{Источник: N. Golyandina, A. Zhigljavsky, \textit{Singular Spectrum Analysis for Time Series}, Springer, 2013.}
+
+\end{frame}
+
+\begin{frame}{Итоговый прогноз временного ряда}
+
+После построения линейного рекуррентного соотношения:
+
+\begin{enumerate}
+    \item Для каждой группы $I_j$ строится прогноз $ \hat{y}_{N+t}^{(I_j)} $:
+    \[
+    \hat{y}_{N+t}^{(I_j)} = a_1^{(j)} \, y_{N+t-1}^{(I_j)} + \dots + a_{L-1}^{(j)} \, y_{N+t-L+1}^{(I_j)}, \quad t=1, \dots, h
+    \]
+    
+    \item Итоговый прогноз ряда получается суммированием прогнозов по группам:
+    \[
+    \hat{x}_{N+t} = \sum_{j=1}^{m} \hat{y}_{N+t}^{(I_j)}, \quad t = 1, \dots, h
+    \]
+    \end{enumerate}
+
+\end{frame}
+
+\begin{frame}{}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{spectrum.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{pricesgraph.png}
+  \end{figure}
+\end{frame}
+
+\end{document}

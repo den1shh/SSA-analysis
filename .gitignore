@@ -1,0 +1,54 @@
+# Окружение
+myenv/
+venv/
+env/
+ENV/
+*.pyc
+__pycache__/
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Данные (опционально, если хранить локально)
+data/*.csv
+
+# Временные файлы
+*.tmp
+*.log
+*.bak
+
+# LaTeX
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+
+GIT_SETUP.md
