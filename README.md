@@ -48,15 +48,7 @@ iad/
 
 1. **Embedding (Вложение)**: Исходный ряд $y_1, y_2, \ldots, y_N$ преобразуется в матрицу Ханкеля $H$ размером $L \times K$:
 
-```
-H = | y₁    y₂    y₃   ...  y_K     |
-    | y₂    y₃    y₄   ...  y_{K+1} |
-    | y₃    y₄    y₅   ...  y_{K+2} |
-    | ...   ...   ...  ...  ...     |
-    | y_L   y_{L+1} ... ... y_N     |
-```
-
-где элемент $H_{ij} = y_{i+j-1}$, $L$ — длина окна, $K = N - L + 1$
+$$H = \begin{pmatrix}y_1 & y_2 & \cdots & y_K \\y_2 & y_3 & \cdots & y_{K+1} \\\vdots & \vdots & \ddots & \vdots \\y_L & y_{L+1} & \cdots & y_N\end{pmatrix}$$
 
 2. **SVD (Сингулярное разложение)**:
 
