@@ -47,12 +47,12 @@ iad/
 ### Основные этапы SSA:
 
 1. **Embedding (Вложение)**: Исходный ряд $y_1, y_2, \ldots, y_N$ преобразуется в матрицу Ханкеля $H$ размером $L \times K$:
-   $H = \begin{pmatrix} 
+   $$H = \begin{pmatrix} 
    y_1 & y_2 & \cdots & y_K \\
    y_2 & y_3 & \cdots & y_{K+1} \\
    \vdots & \vdots & \ddots & \vdots \\
    y_L & y_{L+1} & \cdots & y_N
-   \end{pmatrix}$
+   \end{pmatrix}$$
 
 2. **SVD (Сингулярное разложение)**:
    $$H = U \Sigma V^T$$
